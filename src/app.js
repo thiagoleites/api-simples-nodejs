@@ -20,5 +20,5 @@ app.get('/', (req, res) => {
 app.use('/usuarios', usuariosRouter);
 
 app.listen(port, () => {
-    console.log('Servidor rodando na porta ${port}');
+    console.log(`Servidor rodando na porta ${port}`);
 });
