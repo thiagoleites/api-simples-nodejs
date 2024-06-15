@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
-const port = 3333;
+const port = 3000;
 
 app.use(bodyParser.json());
 
