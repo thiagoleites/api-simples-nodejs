@@ -1,36 +1,16 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path')
-const fs = require('fs');
+import sqlite3 from 'sqlite3';
+import { fileURLToPath } from 'url'
+import path, { dirname } from 'path'
+import { isValidEmail } from '../functions/functions.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const app = express();
-
-const port = 3333;
-
-const dirPath = path.resolve(__dirname, 'db');
-if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath)
-}
-
-const dbPath = path.join(dirPath, 'database.sqlite');
+const dbPath = path.join(__dirname, '../db/database.sqlite');
 const db = new sqlite3.Database(dbPath);
 
 
-db.serialize(() => {
-    db.run('CREATE TABLE IF NOT EXISTS usuarios ( id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT null, email TEXT NOT NULL)');
-});
-
-// Funcao para validacao de email
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-app.use(express.json());
-
-// Rota para inserir usuários
-app.post('/usuarios', (req, res) => {
+export function insertUsuario(req, res) {
     const { nome, email } = req.body;
 
     if (!nome || !email) {
@@ -50,10 +30,9 @@ app.post('/usuarios', (req, res) => {
         }
         res.status(201).json({ id: this.lastID, nome, email });
     });
-})
+}
 
-// Rota para obter ususarios.
-app.get('/usuarios', (req, res) => {
+export function listUsuario(req, res) {
     const query = 'SELECT * FROM usuarios';
 
     db.all(query, (err, rows) => {
@@ -64,10 +43,9 @@ app.get('/usuarios', (req, res) => {
 
         return res.status(200).json(rows);
     })
-})
+}
 
-// Rota para deletar usuário
-app.delete("/usuarios/:id", (req, res) => {
+export function deleteUsuario(req, res) {
     const { id } = req.params;
 
     if (!id || isNaN(id)) {
@@ -88,8 +66,4 @@ app.delete("/usuarios/:id", (req, res) => {
 
         res.status(200).json({ message: "Usuario deletado com sucesso"})
     })
-})
-
-app.listen(port, () => {
-    console.log(`servidor rodando na porta ${port}`)
-})
+}
