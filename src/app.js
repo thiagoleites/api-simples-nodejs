@@ -13,6 +13,10 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+    res.send('Bem vindo a API com Nodejs');
+})
+
 app.use('/usuarios', usuariosRouter);
 
 app.listen(port, () => {
